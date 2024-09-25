@@ -58,7 +58,12 @@ func NewChainPoller(
 	cc ccapi.ClientController,
 	consumerCon ccapi.ConsumerController,
 	metrics *metrics.FpMetrics,
+	gap uint64,
 ) *ChainPoller {
+	bufferSize := cfg.BufferSize
+	if gap > uint64(bufferSize) {
+		bufferSize = uint32(gap)
+	}
 	return &ChainPoller{
 		isStarted:      atomic.NewBool(false),
 		logger:         logger,
@@ -66,7 +71,7 @@ func NewChainPoller(
 		cc:             cc,
 		consumerCon:    consumerCon,
 		metrics:        metrics,
-		blockInfoChan:  make(chan *types.BlockInfo, cfg.BufferSize),
+		blockInfoChan:  make(chan *types.BlockInfo, bufferSize),
 		skipHeightChan: make(chan *skipHeightRequest),
 		quit:           make(chan struct{}),
 	}
