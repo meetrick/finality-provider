@@ -5,11 +5,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math"
+	"math/big"
+
 	bbnclient "github.com/babylonlabs-io/babylon/client/client"
 	btcstakingtypes "github.com/babylonlabs-io/babylon/x/btcstaking/types"
 	sdkquerytypes "github.com/cosmos/cosmos-sdk/types/query"
-	"math"
-	"math/big"
 
 	sdkErr "cosmossdk.io/errors"
 	wasmdparams "github.com/CosmWasm/wasmd/app/params"
@@ -375,8 +376,10 @@ func (cc *OPStackL2ConsumerController) QueryBlocks(startHeight, endHeight, limit
 
 // QueryBlock returns the L2 block number and block hash with the given block number from a RPC call
 func (cc *OPStackL2ConsumerController) QueryBlock(height uint64) (*types.BlockInfo, error) {
+	cc.logger.Debug("QueryBlock", zap.String("rpc_address", cc.Cfg.OPStackL2RPCAddress))
 	l2Block, err := cc.opl2Client.HeaderByNumber(context.Background(), new(big.Int).SetUint64(height))
 	if err != nil {
+		cc.logger.Error("failed to query block", zap.Error(err))
 		return nil, err
 	}
 
