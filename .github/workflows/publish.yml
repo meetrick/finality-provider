@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
       - 'base/consumer-chain-support'
+      - 'gai/fix-voting-power-err-handler-build'
     tags:
       - '*'
 
