@@ -143,10 +143,11 @@ func (cp *ChainPoller) blockWithRetry(height uint64) (*types.BlockInfo, error) {
 func (cp *ChainPoller) waitForActivation() {
 	// ensure that the startHeight is no lower than the activated height
 	for {
-		activatedHeight, err := cp.cc.QueryActivatedHeight()
+		activatedHeight, err := cp.cc.QueryFinalityActivationBlockHeight()
 		if err != nil {
 			cp.logger.Debug("failed to query the consumer chain for the activated height", zap.Error(err))
 		} else {
+			cp.logger.Debug("query activated height: chain not activated yet")
 			if cp.nextHeight < activatedHeight {
 				cp.nextHeight = activatedHeight
 			}
