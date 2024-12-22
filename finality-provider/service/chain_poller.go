@@ -155,6 +155,8 @@ func (cp *ChainPoller) waitForActivation() {
 		}
 		select {
 		case <-time.After(cp.cfg.PollInterval):
+			cp.logger.Debug("wait for activation", zap.Float64("poll_interval", cp.cfg.PollInterval.Seconds()))
+
 			continue
 		case <-cp.quit:
 			return
@@ -172,6 +174,11 @@ func (cp *ChainPoller) pollChain() {
 	for {
 		// start polling in the first iteration
 		blockToRetrieve := cp.nextHeight
+		cp.logger.Debug(
+			"start to pool block",
+			zap.Uint32("current_failures", failedCycles),
+			zap.Uint64("block_to_retrieve", blockToRetrieve),
+		)
 		block, err := cp.blockWithRetry(blockToRetrieve)
 		if err != nil {
 			failedCycles++
@@ -202,8 +209,11 @@ func (cp *ChainPoller) pollChain() {
 		}
 		select {
 		case <-time.After(cp.cfg.PollInterval):
+			cp.logger.Debug("poll chain time after", zap.Float64("poll_interval", cp.cfg.PollInterval.Seconds()))
+
 			continue
 		case req := <-cp.skipHeightChan:
+			cp.logger.Debug("poll chain skip height", zap.Uint64("skip_height", req.height))
 			// no need to skip heights if the target height is not higher
 			// than the next height to retrieve
 			targetHeight := req.height
