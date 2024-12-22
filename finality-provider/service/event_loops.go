@@ -126,6 +126,13 @@ func (app *FinalityProviderApp) registrationLoop() {
 
 			app.metrics.RecordFpStatus(req.btcPubKey.MarshalHex(), proto.FinalityProviderStatus_REGISTERED)
 
+			if err := app.StartFinalityProvider(req.btcPubKey, ""); err != nil {
+				app.logger.Error(
+					"failed to start finality-provider instance after register",
+					zap.String("pk", req.btcPubKey.MarshalHex()),
+					zap.Error(err),
+				)
+			}
 			req.successResponse <- &RegisterFinalityProviderResponse{
 				txHash: res.TxHash,
 			}

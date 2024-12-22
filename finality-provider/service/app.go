@@ -261,6 +261,10 @@ func (app *FinalityProviderApp) SyncAllFinalityProvidersStatus() error {
 		)
 	}
 
+	app.logger.Debug(
+		"finalized SyncAllFinalityProvidersStatus",
+	)
+
 	return nil
 }
 
