@@ -412,6 +412,13 @@ func (app *FinalityProviderApp) CreateFinalityProvider(
 			zap.String("addr", fpAddr.String()),
 		)
 
+		if err := app.StartFinalityProvider(eotsPk, ""); err != nil {
+			app.logger.Error(
+				"failed to start finality-provider instance after register",
+				zap.String("pk", pkHex),
+				zap.Error(err),
+			)
+		}
 		storedFp, err := app.fps.GetFinalityProvider(btcPk)
 		if err != nil {
 			return nil, err
