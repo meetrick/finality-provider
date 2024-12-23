@@ -413,6 +413,15 @@ func (app *FinalityProviderApp) CreateFinalityProvider(
 			return nil, err
 		}
 
+		err = app.startFinalityProviderInstance(storedFp.GetBIP340BTCPK(), "")
+		if err != nil {
+			app.logger.Error(
+				"failed to start fp instance",
+				zap.String("eots_pk", pkHex),
+				zap.Error(err),
+			)
+		}
+
 		return &CreateFinalityProviderResult{
 			FpInfo: storedFp.ToFinalityProviderInfo(),
 			TxHash: successResponse.txHash,
